@@ -21,16 +21,6 @@ struct Settings {
         static let interval = "pd_interval"
         static let nokColor = "pd_nokColor"
     }
-    
-    private static func validatedHost(_ stored: String?) -> String {
-        guard let stored, HostValidator.isValid(stored) else { return defaultHost }
-        return stored
-    }
-
-    private static func clampedInterval(_ stored: TimeInterval) -> TimeInterval {
-        guard stored >= 1 else { return defaultInterval }
-        return min(stored, 3600)
-    }
 
     static func load() -> Settings {
         let d = UserDefaults.standard
@@ -50,6 +40,16 @@ struct Settings {
         ) {
             d.set(data, forKey: Key.nokColor)
         }
+    }
+
+    private static func validatedHost(_ stored: String?) -> String {
+        guard let stored, HostValidator.isValid(stored) else { return defaultHost }
+        return stored
+    }
+
+    private static func clampedInterval(_ stored: TimeInterval) -> TimeInterval {
+        guard stored >= 1 else { return defaultInterval }
+        return min(stored, 3600)
     }
 
     private static func storedColor() -> NSColor? {
