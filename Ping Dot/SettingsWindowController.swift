@@ -1,6 +1,6 @@
 import Cocoa
 
-final class SettingsWindowController: NSWindowController, NSWindowDelegate {
+final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTextFieldDelegate {
 
     var onSave: ((Settings) -> Void)?
 
@@ -34,6 +34,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
 
         intervalField.stringValue       = String(format: "%.0f", s.interval)
         intervalField.placeholderString = "5"
+        intervalField.delegate          = self
 
         colorWell.color      = s.nokColor
         colorWell.isBordered = true
@@ -116,10 +117,13 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
         guard !host.isEmpty else {
             return alert("Host cannot be empty.")
         }
-        guard let iv = Double(intervalField.stringValue), iv >= 1 else {
-            return alert("Interval must be a number ≥ 1.")
+        guard HostValidator.isValid(host) else {
+            return alert("Enter a valid IPv4 address, IPv6 address, or hostname.")
         }
-        onSave?(Settings(host: host, interval: iv, nokColor: colorWell.color))
+        guard let iv = Int(intervalField.stringValue), (1...3600).contains(iv) else {
+            return alert("Interval must be a whole number between 1 and 3600 seconds.")
+        }
+        onSave?(Settings(host: host, interval: TimeInterval(iv), nokColor: colorWell.color))
         close()
     }
 
@@ -132,6 +136,14 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate {
         a.informativeText = message
         a.alertStyle      = .warning
         a.beginSheetModal(for: w)
+    }
+    
+    func controlTextDidChange(_ notification: Notification) {
+        guard let field = notification.object as? NSTextField, field === intervalField else { return }
+        let digitsOnly = field.stringValue.filter(\.isNumber)
+        if digitsOnly != field.stringValue {
+            field.stringValue = digitsOnly
+        }
     }
 
     func windowWillClose(_ notification: Notification) {
