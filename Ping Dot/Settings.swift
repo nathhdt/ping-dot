@@ -21,13 +21,22 @@ struct Settings {
         static let interval = "pd_interval"
         static let nokColor = "pd_nokColor"
     }
+    
+    private static func validatedHost(_ stored: String?) -> String {
+        guard let stored, HostValidator.isValid(stored) else { return defaultHost }
+        return stored
+    }
+
+    private static func clampedInterval(_ stored: TimeInterval) -> TimeInterval {
+        guard stored >= 1 else { return defaultInterval }
+        return min(stored, 3600)
+    }
 
     static func load() -> Settings {
         let d = UserDefaults.standard
-        let iv = d.double(forKey: Key.interval)
         return Settings(
-            host:     d.string(forKey: Key.host) ?? defaultHost,
-            interval: iv >= 1 ? iv : defaultInterval,
+            host:     validatedHost(d.string(forKey: Key.host)),
+            interval: clampedInterval(d.double(forKey: Key.interval)),
             nokColor: storedColor() ?? defaultNokColor
         )
     }
