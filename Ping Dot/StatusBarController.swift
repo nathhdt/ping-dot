@@ -12,7 +12,6 @@ final class StatusBarController {
     init() {
         item     = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         settings = Settings.load()
-        item.button?.wantsLayer = true
 
         buildMenu()
         render(status: nil)
