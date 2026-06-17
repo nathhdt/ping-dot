@@ -1,6 +1,6 @@
 import Foundation
 
-enum HostValidator {
+nonisolated enum HostValidator {
 
     static func isValid(_ host: String) -> Bool {
         isValidIPv4(host) || isValidIPv6(host) || isValidHostname(host)
@@ -22,9 +22,7 @@ enum HostValidator {
         let labels = host.split(separator: ".", omittingEmptySubsequences: false)
         guard !labels.isEmpty else { return false }
 
-        return labels.allSatisfy { label in
-            isValidLabel(label)
-        }
+        return labels.allSatisfy(isValidLabel)
     }
 
     private static func isValidLabel(_ label: Substring) -> Bool {
