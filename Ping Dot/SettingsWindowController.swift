@@ -69,7 +69,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
 
     private func fieldRow(label text: String, field: NSTextField) -> NSStackView {
         field.translatesAutoresizingMaskIntoConstraints = false
-        field.widthAnchor.constraint(equalToConstant: 160).isActive = true
+        field.widthAnchor.constraint(equalToConstant: 130).isActive = true
 
         let s = NSStackView(views: [label(text), field])
         s.orientation = .horizontal
