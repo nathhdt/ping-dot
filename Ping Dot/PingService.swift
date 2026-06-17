@@ -7,10 +7,17 @@ final class PingService {
     var onStatusChanged: ((Status) -> Void)?
     private(set) var currentStatus: Status?
 
+    private static let pingCount   = "1"
+    private static let pingTimeout = "2"
+
     private var timer:    Timer?
     private var host:     String = ""
     private var inFlight: Bool   = false
     private let queue = DispatchQueue(label: "io.pingdot.ping", qos: .utility)
+
+    deinit {
+        timer?.invalidate()
+    }
 
     func start(host: String, interval: TimeInterval) {
         self.host = host
@@ -57,7 +64,7 @@ final class PingService {
     private static func runPing(host: String) -> Bool {
         let task = Process()
         task.executableURL  = URL(fileURLWithPath: "/sbin/ping")
-        task.arguments      = ["-c", "1", "-t", "2", host]
+        task.arguments      = ["-c", pingCount, "-t", pingTimeout, host]
         task.standardOutput = FileHandle.nullDevice
         task.standardError  = FileHandle.nullDevice
         do {
@@ -65,6 +72,7 @@ final class PingService {
             task.waitUntilExit()
             return task.terminationStatus == 0
         } catch {
+            NSLog("PingService: failed to launch /sbin/ping — \(error.localizedDescription)")
             return false
         }
     }
