@@ -6,6 +6,7 @@ struct Settings {
     var host:     String
     var interval: TimeInterval // seconds
     var nokColor: NSColor
+    var launchAtLogin: Bool
 
     static let defaultHost:     String       = "9.9.9.9"
     static let defaultInterval: TimeInterval = 5
@@ -25,9 +26,10 @@ struct Settings {
     static func load() -> Settings {
         let d = UserDefaults.standard
         return Settings(
-            host:     validatedHost(d.string(forKey: Key.host)),
-            interval: clampedInterval(d.double(forKey: Key.interval)),
-            nokColor: storedColor() ?? defaultNokColor
+            host:          validatedHost(d.string(forKey: Key.host)),
+            interval:      clampedInterval(d.double(forKey: Key.interval)),
+            nokColor:      storedColor() ?? defaultNokColor,
+            launchAtLogin: LaunchAtLoginManager.isEnabled
         )
     }
 

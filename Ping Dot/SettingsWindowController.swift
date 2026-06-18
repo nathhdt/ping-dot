@@ -8,9 +8,15 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
     private let intervalField = NSTextField()
     private let colorWell     = NSColorWell()
 
+    private let launchAtLoginCheckbox = NSButton(
+        checkboxWithTitle: "Launch at login",
+        target: nil,
+        action: nil
+    )
+
     init(settings: Settings) {
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 300, height: 152),
+            contentRect: NSRect(x: 0, y: 0, width: 300, height: 182),
             styleMask: [.titled, .closable],
             backing: .buffered,
             defer: false
@@ -38,15 +44,21 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
 
         colorWell.color      = s.nokColor
         colorWell.isBordered = true
+
+        launchAtLoginCheckbox.state = s.launchAtLogin ? .on : .off
     }
 
     private func buildLayout() {
         guard let cv = window?.contentView else { return }
 
+        let checkboxRow = NSStackView(views: [launchAtLoginCheckbox])
+        checkboxRow.orientation = .horizontal
+
         let rows = NSStackView(views: [
             fieldRow(label: "Host/IP",      field: hostField),
             fieldRow(label: "Interval (s)", field: intervalField),
-            colorRow()
+            colorRow(),
+            checkboxRow
         ])
         rows.orientation = .vertical
         rows.alignment   = .leading
@@ -123,7 +135,14 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         guard let iv = Int(intervalField.stringValue), (1...3600).contains(iv) else {
             return alert("Interval must be a whole number between 1 and 3600 seconds.")
         }
-        onSave?(Settings(host: host, interval: TimeInterval(iv), nokColor: colorWell.color))
+
+        onSave?(Settings(
+            host: host,
+            interval: TimeInterval(iv),
+            nokColor: colorWell.color,
+            launchAtLogin: launchAtLoginCheckbox.state == .on
+        ))
+
         close()
     }
 
@@ -137,9 +156,10 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         a.alertStyle      = .warning
         a.beginSheetModal(for: w)
     }
-    
+
     func controlTextDidChange(_ notification: Notification) {
         guard let field = notification.object as? NSTextField, field === intervalField else { return }
+
         let digitsOnly = field.stringValue.filter(\.isNumber)
         if digitsOnly != field.stringValue {
             field.stringValue = digitsOnly
