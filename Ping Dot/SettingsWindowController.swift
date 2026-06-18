@@ -55,7 +55,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         checkboxRow.orientation = .horizontal
 
         let rows = NSStackView(views: [
-            fieldRow(label: "Host/IP",      field: hostField),
+            fieldRow(label: "Hostname/IP",      field: hostField),
             fieldRow(label: "Interval (s)", field: intervalField),
             colorRow(),
             checkboxRow
