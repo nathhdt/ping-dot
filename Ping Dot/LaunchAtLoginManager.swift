@@ -39,8 +39,6 @@ nonisolated enum LaunchAtLoginManager {
             withIntermediateDirectories: true
         )
         try? data.write(to: agentURL, options: .atomic)
-
-        runLaunchctl(["load", agentURL.path])
     }
 
     private static func uninstall() {
