@@ -10,6 +10,6 @@ menu bar shows a small dot: white when the target host responds, colored when it
 
 ## installation
 
-requires macOS 10.15 (Catalina) or later.
+requires macOS 10.15 (Catalina) or later. universal binary (Apple Silicon + Intel).
 
 grab the latest `.app` from [Releases](https://github.com/nathhdt/ping-dot/releases).
