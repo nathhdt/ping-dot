@@ -7,8 +7,8 @@ final class PingService {
     var onStatusChanged: ((Status) -> Void)?
     private(set) var currentStatus: Status?
 
-    private static let pingCount   = "1"
-    private static let pingTimeout = "2"
+    nonisolated private static let pingCount   = "1"
+    nonisolated private static let pingTimeout = "2"
 
     private var timer:    Timer?
     private var host:     String = ""
@@ -61,7 +61,7 @@ final class PingService {
         }
     }
 
-    private static func runPing(host: String) -> Bool {
+    nonisolated private static func runPing(host: String) -> Bool {
         let task = Process()
         task.executableURL  = URL(fileURLWithPath: "/sbin/ping")
         task.arguments      = ["-c", pingCount, "-t", pingTimeout, host]
