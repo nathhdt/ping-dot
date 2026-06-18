@@ -1,8 +1,9 @@
 import Foundation
 
-enum LaunchAtLoginManager {
+nonisolated enum LaunchAtLoginManager {
 
-    private static let label = "nathhdt.ping-dot.launcher"
+    private static let label = (Bundle.main.bundleIdentifier ?? "nathhdt.ping-dot") + ".launcher"
+    private static let queue = DispatchQueue(label: "io.pingdot.launchatlogin", qos: .utility)
 
     private static var agentURL: URL {
         FileManager.default
@@ -15,7 +16,9 @@ enum LaunchAtLoginManager {
     }
 
     static func setEnabled(_ enabled: Bool) {
-        enabled ? install() : uninstall()
+        queue.async {
+            enabled ? install() : uninstall()
+        }
     }
 
     private static func install() {
@@ -35,7 +38,7 @@ enum LaunchAtLoginManager {
             at: agentURL.deletingLastPathComponent(),
             withIntermediateDirectories: true
         )
-        try? data.write(to: agentURL)
+        try? data.write(to: agentURL, options: .atomic)
 
         runLaunchctl(["load", agentURL.path])
     }
